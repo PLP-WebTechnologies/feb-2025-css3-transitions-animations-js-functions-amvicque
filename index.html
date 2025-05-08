@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Theme Toggle</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Custom CSS for animations */
+        .theme-toggle {
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+        
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(10deg);
+        }
+        
+        .card {
+            transition: all 0.3s ease;
+            transform-origin: center;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.8s ease forwards;
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Dark mode styles */
+        .dark {
+            background-color: #1a202c;
+            color: #f7fafc;
+        }
+        
+        .dark .card {
+            background-color: #2d3748;
+            color: #e2e8f0;
+        }
+        
+        .dark .btn-primary {
+            background-color: #4a5568;
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen transition-colors duration-300">
+    <div class="container mx-auto px-4 py-8">
+        <header class="flex justify-between items-center mb-12">
+            <h1 class="text-4xl font-bold text-indigo-600 fade-in">Theme Switcher</h1>
+            <button id="themeToggle" class="theme-toggle bg-indigo-600 text-white p-3 rounded-full shadow-lg hover:shadow-xl">
+                <i class="fas fa-moon text-xl"></i>
+            </button>
+        </header>
+        
+        <div class="mb-8 p-6 bg-white rounded-xl shadow-md card fade-in" style="animation-delay: 0.2s;">
+            <h2 class="text-2xl font-semibold mb-4">Welcome to our Theme Demo</h2>
+            <p class="text-gray-600 mb-4">Toggle between light and dark mode. Your preference will be saved for your next visit!</p>
+            <div class="flex space-x-4">
+                <button id="animateBtn" class="btn-primary px-6 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition-colors">
+                    Click Me!
+                </button>
+                <button id="resetBtn" class="px-6 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors">
+                    Reset Preferences
+                </button>
+            </div>
+        </div>
+        
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="card bg-white p-6 rounded-xl shadow-md fade-in" style="animation-delay: 0.4s;">
+                <div class="text-5xl text-indigo-500 mb-4 pulse">
+                    <i class="fas fa-palette"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Color Themes</h3>
+                <p class="text-gray-600">Experience smooth transitions between different color schemes with just one click.</p>
+            </div>
+            
+            <div class="card bg-white p-6 rounded-xl shadow-md fade-in" style="animation-delay: 0.6s;">
+                <div class="text-5xl text-indigo-500 mb-4">
+                    <i class="fas fa-database"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Local Storage</h3>
+                <p class="text-gray-600">Your preferences are saved in your browser's localStorage for persistence across visits.</p>
+            </div>
+            
+            <div class="card bg-white p-6 rounded-xl shadow-md fade-in" style="animation-delay: 0.8s;">
+                <div class="text-5xl text-indigo-500 mb-4">
+                    <i class="fas fa-code"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Animations</h3>
+                <p class="text-gray-600">Enjoy various CSS animations triggered by user interactions and page load.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check for saved theme preference
+            const savedTheme = localStorage.getItem('theme');
+            const themeToggle = document.getElementById('themeToggle');
+            const animateBtn = document.getElementById('animateBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const body = document.body;
+            
+            // Apply saved theme or default to light
+            if (savedTheme === 'dark') {
+                body.classList.add('dark');
+                themeToggle.innerHTML = '<i class="fas fa-sun text-xl"></i>';
+            } else {
+                body.classList.remove('dark');
+                themeToggle.innerHTML = '<i class="fas fa-moon text-xl"></i>';
+            }
+            
+            // Theme toggle functionality
+            themeToggle.addEventListener('click', function() {
+                body.classList.toggle('dark');
+                
+                // Save preference to localStorage
+                if (body.classList.contains('dark')) {
+                    localStorage.setItem('theme', 'dark');
+                    themeToggle.innerHTML = '<i class="fas fa-sun text-xl"></i>';
+                } else {
+                    localStorage.setItem('theme', 'light');
+                    themeToggle.innerHTML = '<i class="fas fa-moon text-xl"></i>';
+                }
+                
+                // Add animation to toggle button
+                themeToggle.classList.add('animate-spin');
+                setTimeout(() => {
+                    themeToggle.classList.remove('animate-spin');
+                }, 500);
+            });
+            
+            // Animation button
+            animateBtn.addEventListener('click', function() {
+                // Add pulse animation to all cards
+                const cards = document.querySelectorAll('.card');
+                cards.forEach(card => {
+                    card.classList.add('pulse');
+                    
+                    // Random color change for fun
+                    const colors = ['bg-indigo-100', 'bg-pink-100', 'bg-green-100', 'bg-yellow-100'];
+                    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                    
+                    // Only apply to light mode
+                    if (!body.classList.contains('dark')) {
+                        card.classList.add(randomColor);
+                    }
+                    
+                    setTimeout(() => {
+                        card.classList.remove('pulse');
+                        card.classList.remove('bg-indigo-100', 'bg-pink-100', 'bg-green-100', 'bg-yellow-100');
+                    }, 2000);
+                });
+                
+                // Button click effect
+                animateBtn.classList.add('transform', 'scale-95');
+                setTimeout(() => {
+                    animateBtn.classList.remove('transform', 'scale-95');
+                }, 200);
+                
+                // Save animation count
+                let clickCount = parseInt(localStorage.getItem('clickCount') || '0');
+                clickCount++;
+                localStorage.setItem('clickCount', clickCount);
+                
+                // Show notification
+                showNotification(`You've clicked ${clickCount} time${clickCount !== 1 ? 's' : ''}!`);
+            });
+            
+            // Reset button
+            resetBtn.addEventListener('click', function() {
+                localStorage.clear();
+                body.classList.remove('dark');
+                themeToggle.innerHTML = '<i class="fas fa-moon text-xl"></i>';
+                
+                // Show notification
+                showNotification('Preferences reset!');
+                
+                // Add confirmation animation
+                resetBtn.classList.add('bg-green-500', 'text-white');
+                setTimeout(() => {
+                    resetBtn.classList.remove('bg-green-500', 'text-white');
+                }, 1000);
+            });
+            
+            // Helper function to show notifications
+            function showNotification(message) {
+                const notification = document.createElement('div');
+                notification.className = 'fixed bottom-4 right-4 px-6 py-3 bg-indigo-600 text-white rounded-lg shadow-lg transform translate-y-10 opacity-0 transition-all duration-300';
+                notification.textContent = message;
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.classList.remove('translate-y-10', 'opacity-0');
+                    notification.classList.add('translate-y-0', 'opacity-100');
+                }, 10);
+                
+                setTimeout(() => {
+                    notification.classList.remove('translate-y-0', 'opacity-100');
+                    notification.classList.add('translate-y-10', 'opacity-0');
+                    
+                    setTimeout(() => {
+                        notification.remove();
+                    }, 300);
+                }, 3000);
+            }
+            
+            // Add animation to elements on scroll
+            const observerOptions = {
+                threshold: 0.1
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('fade-in');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+            
+            document.querySelectorAll('.fade-in').forEach(el => {
+                observer.observe(el);
+            });
+        });
+    </script>
+</body>
+</html>
